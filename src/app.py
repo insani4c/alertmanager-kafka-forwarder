@@ -39,7 +39,7 @@ def postAlertManager():
 
     for alert in content['alerts']:
         producer.poll(0)
-        producer.produce(TOPIC, value=alert, callback=acked)
+        producer.produce(TOPIC, json.dumps(alert), callback=acked)
 
     producer.flush()
     return "Alert OK", 200

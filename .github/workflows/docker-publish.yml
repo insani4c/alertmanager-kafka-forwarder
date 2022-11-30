@@ -80,6 +80,7 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          ssh-private-key: ${{ secrets.SECRET_REPO_DEPLOY_KEY }}
 
 
       # Sign the resulting Docker image digest except on PRs.

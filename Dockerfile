@@ -9,7 +9,10 @@ WORKDIR /app
 COPY requirements.txt requirements.txt
 COPY src/app.py .
 
+RUN apk update && apk upgrade
+RUN apk add --no-cache gcc g++ && rm -rf /var/cache/apk/*
 RUN pip3 install -r requirements.txt
+RUN apk del gcc g++ && rm -rf /var/cache/apk/*
 
 EXPOSE 9792
 

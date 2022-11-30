@@ -1,20 +1,22 @@
 # Forward alerts to Kafka
 # Module: Kafka
 
+import os
 import json
 from confluent_kafka.cimpl import Producer
 from flask import Flask
 from flask import request
 
+BOOTSTRAP_SERVERS = os.getenv('BOOTSTRAP_SERVERS', 'kafka:9092')
+FLASK_SECRET_KEY  = os.getenv('FLASK_SECRET_KEY', 'changeKey')
+KAFKA_TOPIC       = os.getenv('KAFKA_TOPIC', 'alertmanager-events')
+
 app = Flask(__name__)
-app.secret_key = 'changeKeyHeere'
+app.secret_key = FLASK_SECRET_KEY
 
-# Yes need to have -, change it!
-TOPIC = "outerrim-events"
-
-# Authentication conf, change it!
+# kafka-config
 kafka_config = {
-    'bootstrap.servers': "kafka-1:19092,kafka-2:19093,kafka-3:19094",
+    'bootstrap.servers': BOOTSTRAP_SERVERS,
 }
 
 @app.route('/alert', methods = ['POST'])
@@ -24,6 +26,7 @@ def postAlertManager():
     # when a message has been successfully delivered or
     # permanently failed delivery (after retries).
     def acked(err, msg):
+
         """Delivery report handler called on
         successful or failed delivery of message
         """
@@ -39,7 +42,7 @@ def postAlertManager():
 
     for alert in content['alerts']:
         producer.poll(0)
-        producer.produce(TOPIC, json.dumps(alert), callback=acked)
+        producer.produce(KAFKA_TOPIC, json.dumps(alert), callback=acked)
 
     producer.flush()
     return "Alert OK", 200

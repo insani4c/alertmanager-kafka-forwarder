@@ -10,9 +10,9 @@ COPY requirements.txt requirements.txt
 COPY src/app.py .
 
 RUN apk update && apk upgrade
-RUN apk add --no-cache librdkafka gcc g++ && rm -rf /var/cache/apk/*
+RUN apk add --no-cache librdkafka librdkafka-dev gcc g++ && rm -rf /var/cache/apk/*
 RUN pip3 install -r requirements.txt
-RUN apk del gcc g++ && rm -rf /var/cache/apk/*
+RUN apk del gcc g++ librdkafka-dev && rm -rf /var/cache/apk/*
 
 EXPOSE 9792
 

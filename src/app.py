@@ -5,7 +5,7 @@ import os
 import logging
 import sys
 import json
-from confluent_kafka.cimpl import Producer, Exception
+from confluent_kafka.cimpl import Producer
 from flask import Flask
 from flask import request
 

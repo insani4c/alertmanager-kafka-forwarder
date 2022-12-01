@@ -23,7 +23,7 @@ Docker Compose Example:
 
 Alertmanager example:
 
-```toml
+```yaml
 receivers:
 - name: 'internal-kafka'
   webhook_configs:

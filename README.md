@@ -20,3 +20,13 @@ Docker Compose Example:
       - 9792:9792
 
 ```
+
+Alertmanager example:
+
+```toml
+receivers:
+- name: 'internal-kafka'
+  webhook_configs:
+    - url: 'http://alertmanager-kafka-forwarder:9792/alert'
+      send_resolved: true
+```

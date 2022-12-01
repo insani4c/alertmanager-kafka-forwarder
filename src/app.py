@@ -2,8 +2,10 @@
 # Module: Kafka
 
 import os
+import logging
+import sys
 import json
-from confluent_kafka.cimpl import Producer
+from confluent_kafka.cimpl import Producer, Exception
 from flask import Flask
 from flask import request
 
@@ -11,6 +13,16 @@ BOOTSTRAP_SERVERS = os.getenv('BOOTSTRAP_SERVERS', 'kafka:9092')
 FLASK_SECRET_KEY  = os.getenv('FLASK_SECRET_KEY', 'changeKey')
 KAFKA_TOPIC       = os.getenv('KAFKA_TOPIC', 'alertmanager-events')
 
+# enable logging to stdout
+logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
+formatter = logging.Formatter(
+    '[%(asctime)s] %(levelname)s [%(filename)s.%(funcName)s:%(lineno)d] %(message)s',
+    datefmt='%a, %d %b %Y %H:%M:%S'
+    )
+logger = logging.getLogger('alertmanager-kafka-forwarder')
+logger.setFormatter(formatter)
+
+# initialize the webservice
 app = Flask(__name__)
 app.secret_key = FLASK_SECRET_KEY
 
@@ -32,17 +44,22 @@ def postAlertManager():
         """
 
         if err is not None:
-            print("Failed to deliver message: {}".format(err))
+            logger.error("Failed to deliver message: {}".format(err))
         else:
-            print("Produced record to topic {} partition [{}] @ offset {}"
+            logger.info("Produced record to topic {} partition [{}] @ offset {}"
                   .format(msg.topic(), msg.partition(), msg.offset()))
 
-    producer = Producer(kafka_config)
-    content = json.loads(request.get_data())
+    try:
+        producer = Producer(kafka_config)
+        content = json.loads(request.get_data())
 
-    for alert in content['alerts']:
-        producer.poll(0)
-        producer.produce(KAFKA_TOPIC, json.dumps(alert), callback=acked)
+        for alert in content['alerts']:
+            producer.poll(0)
+            producer.produce(KAFKA_TOPIC, json.dumps(alert), callback=acked)
 
-    producer.flush()
+        producer.flush()
+    except Exception as ex:
+        logger.error("Exception happened: {}".format(ex))
+        return "Alert FAILED", 501
+
     return "Alert OK", 200

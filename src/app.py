@@ -50,11 +50,12 @@ def postAlertManager():
                   .format(msg.topic(), msg.partition(), msg.offset()))
 
     try:
-        producer = Producer(kafka_config)
         content = json.loads(request.get_data())
 
+        producer = Producer(kafka_config)
+        producer.poll(0)
+
         for alert in content['alerts']:
-            producer.poll(0)
             producer.produce(KAFKA_TOPIC, json.dumps(alert), callback=acked)
 
         producer.flush()

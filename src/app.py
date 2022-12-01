@@ -14,13 +14,13 @@ FLASK_SECRET_KEY  = os.getenv('FLASK_SECRET_KEY', 'changeKey')
 KAFKA_TOPIC       = os.getenv('KAFKA_TOPIC', 'alertmanager-events')
 
 # enable logging to stdout
-logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
-formatter = logging.Formatter(
-    '[%(asctime)s] %(levelname)s [%(filename)s.%(funcName)s:%(lineno)d] %(message)s',
+logging.basicConfig(
+    stream=sys.stdout, 
+    level=logging.DEBUG,
+    format='[%(asctime)s] %(levelname)s [%(filename)s.%(funcName)s:%(lineno)d] %(message)s',
     datefmt='%a, %d %b %Y %H:%M:%S'
     )
 logger = logging.getLogger('alertmanager-kafka-forwarder')
-logger.setFormatter(formatter)
 
 # initialize the webservice
 app = Flask(__name__)

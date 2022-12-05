@@ -8,7 +8,7 @@ import json
 from confluent_kafka.cimpl import Producer
 from flask import Flask
 from flask import request
-from prometheus_client import Counter
+from prometheus_client import Counter, Summary
 
 BOOTSTRAP_SERVERS = os.getenv('BOOTSTRAP_SERVERS', 'kafka:9092')
 FLASK_SECRET_KEY  = os.getenv('FLASK_SECRET_KEY', 'changeKey')
@@ -32,12 +32,17 @@ messages_produced_metric = Counter('akf_messages_produced',
                                    ['name', 'partition', 'offset']
                             )
 
+post_alert_request_time_metric = Summary('akf_post_alert_request_processing_seconds', 
+                                         'Time spent processing the alert'
+                                 )
+
 # kafka-config
 kafka_config = {
     'bootstrap.servers': BOOTSTRAP_SERVERS,
 }
 
 @app.route('/alert', methods = ['POST'])
+@post_alert_request_time_metric.time()
 def postAlertManager():
     """Receive alerts and produce Kafka message"""
 

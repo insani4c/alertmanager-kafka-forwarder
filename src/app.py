@@ -8,7 +8,7 @@ import json
 from confluent_kafka.cimpl import Producer
 from flask import Flask
 from flask import request
-from prometheus_client import Counter, Summary, generate_latest
+from prometheus_client import Gauge, Summary, generate_latest
 
 BOOTSTRAP_SERVERS = os.getenv('BOOTSTRAP_SERVERS', 'kafka:9092')
 FLASK_SECRET_KEY  = os.getenv('FLASK_SECRET_KEY', 'changeKey')
@@ -27,9 +27,9 @@ logger = logging.getLogger('alertmanager-kafka-forwarder')
 app = Flask(__name__)
 app.secret_key = FLASK_SECRET_KEY
 
-messages_produced_metric = Counter('akf_messages_produced',
+messages_produced_metric = Gauge('akf_messages_produced',
                                    'Messages Produced',
-                                   ['name', 'partition', 'offset']
+                                   ['name', 'partition']
                             )
 
 post_alert_request_time_metric = Summary('akf_post_alert_request_processing_seconds', 
@@ -58,11 +58,10 @@ def postAlertManager():
         if err is not None:
             logger.error("Failed to deliver message: %s", err)
         else:
-            messages_produced_metric(
+            messages_produced_metric.labels(
                 name=msg.topic(),
-                partition=msg.partition(),
-                offset=msg.offset()
-            ).inc()
+                partition=msg.partition()
+            ).set(msg.offset())
             logger.info("Produced record to topic %s partition [%s] @ offset %s"
                   ,msg.topic(), msg.partition(), msg.offset())
 

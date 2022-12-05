@@ -87,3 +87,10 @@ def metrics():
     """Display Prometheus metrics"""
 
     return generate_latest()
+
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def default_req(path):
+    """Serve all other requests"""
+
+    return {path}, 200

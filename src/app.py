@@ -16,7 +16,7 @@ KAFKA_TOPIC       = os.getenv('KAFKA_TOPIC', 'alertmanager-events')
 # enable logging to stdout
 logging.basicConfig(
     stream=sys.stdout, 
-    level=logging.INFO,
+    level=logging.DEBUG,
     format='[%(asctime)s] %(levelname)s [%(filename)s.%(funcName)s:%(lineno)d] %(message)s',
     datefmt='%a, %d %b %Y %H:%M:%S'
     )
@@ -33,6 +33,7 @@ kafka_config = {
 
 @app.route('/alert', methods = ['POST'])
 def postAlertManager():
+    """Receive alerts and produce Kafka message"""
 
     # Optional per-message on_delivery handler (triggered by poll() or flush())
     # when a message has been successfully delivered or

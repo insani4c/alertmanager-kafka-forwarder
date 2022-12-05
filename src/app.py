@@ -8,7 +8,7 @@ import json
 from confluent_kafka.cimpl import Producer
 from flask import Flask
 from flask import request
-from prometheus_client import Counter, Summary
+from prometheus_client import Counter, Summary, generate_latest
 
 BOOTSTRAP_SERVERS = os.getenv('BOOTSTRAP_SERVERS', 'kafka:9092')
 FLASK_SECRET_KEY  = os.getenv('FLASK_SECRET_KEY', 'changeKey')

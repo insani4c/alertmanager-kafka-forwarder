@@ -16,7 +16,7 @@ KAFKA_TOPIC       = os.getenv('KAFKA_TOPIC', 'alertmanager-events')
 # enable logging to stdout
 logging.basicConfig(
     stream=sys.stdout, 
-    level=logging.DEBUG,
+    level=logging.INFO,
     format='[%(asctime)s] %(levelname)s [%(filename)s.%(funcName)s:%(lineno)d] %(message)s',
     datefmt='%a, %d %b %Y %H:%M:%S'
     )

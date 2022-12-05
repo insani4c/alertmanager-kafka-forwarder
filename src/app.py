@@ -93,4 +93,4 @@ def metrics():
 def default_req(path):
     """Serve all other requests"""
 
-    return {path}, 200
+    return path, 200

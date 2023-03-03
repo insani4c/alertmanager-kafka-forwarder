@@ -9,7 +9,9 @@ WORKDIR /app
 COPY requirements.txt requirements.txt
 COPY src/app.py .
 
-RUN apk update && apk upgrade
+RUN sed -i -e 's/v3\.4/edge/g' /etc/apk/repositories \
+    && apk upgrade --update-cache --available 
+    
 RUN apk add --no-cache librdkafka librdkafka-dev gcc g++ && rm -rf /var/cache/apk/*
 RUN pip3 install -r requirements.txt
 RUN apk del gcc g++ librdkafka-dev && rm -rf /var/cache/apk/*

@@ -9,7 +9,7 @@ WORKDIR /app
 COPY requirements.txt requirements.txt
 COPY src/app.py .
 
-RUN sed -i -e 's/v3\.4/edge/g' /etc/apk/repositories \
+RUN sed -i -e 's/v3\.[0-9]\+/edge/g' /etc/apk/repositories \
     && apk upgrade --update-cache --available 
     
 RUN apk add --no-cache librdkafka librdkafka-dev gcc g++ && rm -rf /var/cache/apk/*

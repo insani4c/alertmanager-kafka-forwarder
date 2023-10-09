@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-FROM python:3.11-alpine
+FROM python:3.12-alpine
 ENV LIBRD_VER="2.1.0"
 
 LABEL maintainer="Johnny Morano <daimyo@shihai-corp.com>"
